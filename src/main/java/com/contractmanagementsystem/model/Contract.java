@@ -18,6 +18,15 @@ public class Contract {
     private String contractName;
     @NotBlank
     private String contractPath;
+
+    @NotBlank
+    private String clientId;
+
+    @NotBlank
+    private String clientName;
+
+    @NotBlank
+    private String consultantId;
     private String extractedText;
     private ContractStatus status = ContractStatus.DRAFT;
 

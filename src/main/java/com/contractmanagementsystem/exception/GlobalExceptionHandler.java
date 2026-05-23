@@ -24,4 +24,13 @@ public class GlobalExceptionHandler {
         error.put("message",ex.getMessage());
         return ResponseEntity.badRequest().body(error);
     }
+
+    @ExceptionHandler(TextExtractionException.class)
+    public ResponseEntity<Map<String, String>> handleTextExtractionException(TextExtractionException ex){
+        Map<String, String> response = new HashMap<>();
+
+        response.put("message", ex.getMessage());
+
+        return ResponseEntity.badRequest().body(response);
+    }
 }

@@ -1,0 +1,49 @@
+package com.contractmanagementsystem.controller;
+
+import com.contractmanagementsystem.service.ClientService;
+import com.contractmanagementsystem.service.ConsultantService;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.core.io.Resource;
+import java.net.MalformedURLException;
+import java.util.Map;
+import java.util.UUID;
+
+@RequiredArgsConstructor
+@RestController
+@RequestMapping("/Consultant")
+public class ConsultantController {
+
+    private final ConsultantService consultantService;
+    private final ClientService clientService;
+
+    @GetMapping
+    public ResponseEntity<Map<String,Object>> getAllContracts(){
+        return consultantService.getAllContracts();
+    }
+    @GetMapping("/{id}/file")
+    public ResponseEntity<Resource> downloadContract(
+            @PathVariable UUID id
+    ) throws MalformedURLException {
+
+        return clientService.downloadContract(id);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Map<String,Object>> getContractByID(@PathVariable UUID id){
+        return consultantService.getContract(id);
+
+    }
+
+    @PutMapping("/updateStatusToReview/{id}")
+    public ResponseEntity<Map<String,String>> draftToReview(@PathVariable UUID id){
+        return consultantService.draftToReview(id);
+    }
+
+    @PutMapping("/updateStatusToApproved/{id}")
+    public ResponseEntity<Map<String,String>> reviewToApproved(@PathVariable UUID id){
+        return consultantService.reviewToApproved(id);
+    }
+}

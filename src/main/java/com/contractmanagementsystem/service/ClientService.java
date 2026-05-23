@@ -8,6 +8,7 @@ import com.contractmanagementsystem.repository.ContractRepository;
 import com.contractmanagementsystem.utils.FileStorageUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import java.io.IOException;
@@ -21,6 +22,8 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 
 import java.net.MalformedURLException;
+
+import static org.bouncycastle.asn1.cms.CMSAttributes.contentType;
 
 @RequiredArgsConstructor
 @Service
@@ -47,9 +50,6 @@ public class ClientService {
         Contract contract =
                 new Contract();
 
-        contract.setId(
-                UUID.randomUUID()
-        );
 
         contract.setContractName(
                 dto.getContractName()
@@ -84,7 +84,7 @@ public class ClientService {
 
     public ResponseEntity<Map<String, Object>>
     updateContract(
-            UUID id,
+            String id,
             ContractRequestDTO dto
     ) throws IOException {
 
@@ -145,44 +145,46 @@ public class ClientService {
         );
     }
 
-    public ResponseEntity<Resource>
-    downloadContract(
-            UUID id
-    ) throws MalformedURLException {
+    public ResponseEntity<Resource> downloadContract(String id)
+            throws MalformedURLException {
 
-        Contract contract =
-                contractRepository
-                        .findById(id)
-                        .orElseThrow(() ->
-                                new ContractException(
-                                        "Contract not found"
-                                )
-                        );
+        Contract contract = contractRepository
+                .findById(id)
+                .orElseThrow(() ->
+                        new ContractException("Contract not found"));
 
-        Path path =
-                Paths.get(
-                        contract
-                                .getContractPath()
-                );
+        Path path = Paths.get(contract.getContractPath());
 
-        Resource resource =
-                new UrlResource(
-                        path.toUri()
-                );
+        Resource resource = new UrlResource(path.toUri());
 
         if (!resource.exists()) {
+            throw new ContractException("File not found");
+        }
 
+        String fileName = resource.getFilename();
+        MediaType mediaType;
+
+        if (fileName != null && fileName.endsWith(".pdf")) {
+            mediaType = MediaType.APPLICATION_PDF;
+        }
+        else if (fileName != null && fileName.endsWith(".docx")) {
+            mediaType = MediaType.parseMediaType(
+                    "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            );
+        }
+        else {
             throw new ContractException(
-                    "File not found"
+                    "Only PDF and DOCX files are allowed"
             );
         }
 
         return ResponseEntity.ok()
+                .contentType(mediaType)
                 .header(
                         HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment; filename=\""
-                                + resource.getFilename()
-                                + "\"")
+                        "attachment; filename=\"" +
+                                fileName + "\""
+                )
                 .body(resource);
     }
 }

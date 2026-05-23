@@ -25,25 +25,25 @@ public class ConsultantController {
     }
     @GetMapping("/{id}/file")
     public ResponseEntity<Resource> downloadContract(
-            @PathVariable UUID id
+            @PathVariable String id
     ) throws MalformedURLException {
 
         return clientService.downloadContract(id);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Map<String,Object>> getContractByID(@PathVariable UUID id){
+    public ResponseEntity<Map<String,Object>> getContractByID(@PathVariable String id){
         return consultantService.getContract(id);
 
     }
 
     @PutMapping("/updateStatusToReview/{id}")
-    public ResponseEntity<Map<String,String>> draftToReview(@PathVariable UUID id){
+    public ResponseEntity<Map<String,String>> draftToReview(@PathVariable String id){
         return consultantService.draftToReview(id);
     }
 
     @PutMapping("/updateStatusToApproved/{id}")
-    public ResponseEntity<Map<String,String>> reviewToApproved(@PathVariable UUID id){
+    public ResponseEntity<Map<String,String>> reviewToApproved(@PathVariable String id){
         return consultantService.reviewToApproved(id);
     }
 }

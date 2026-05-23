@@ -23,7 +23,7 @@ public class ClientController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Map<String, Object>> updateContract(@PathVariable UUID id, @ModelAttribute ContractRequestDTO contractRequestDTO) throws IOException{
+    public ResponseEntity<Map<String, Object>> updateContract(@PathVariable String id, @ModelAttribute ContractRequestDTO contractRequestDTO) throws IOException{
 
         return clientService.updateContract(id, contractRequestDTO);
     }

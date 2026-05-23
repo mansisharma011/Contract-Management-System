@@ -20,7 +20,7 @@ public class ConsultantService {
     private final ContractRepository contractRepository;
 
 
-    public ResponseEntity<Map<String,Object>>getContract(UUID id){
+    public ResponseEntity<Map<String,Object>>getContract(String id){
         Contract contract=contractRepository.findById(id).orElseThrow(() -> new ContractException("No Such Contract Exist"));
         ContractResponseDTO responseDTO=new ContractResponseDTO();
         responseDTO.setId(contract.getId());
@@ -58,7 +58,7 @@ public class ConsultantService {
         return ResponseEntity.ok(response);
     }
 
-    public ResponseEntity<Map<String,String>> draftToReview(UUID id){
+    public ResponseEntity<Map<String,String>> draftToReview(String id){
 
         Contract contract=contractRepository.findById(id).orElseThrow(() -> new ContractException("No Contract With This ID exist"));
         if(contract.getStatus() == ContractStatus.DRAFT){
@@ -72,7 +72,7 @@ public class ConsultantService {
 
     }
 
-    public ResponseEntity<Map<String,String>> reviewToApproved(UUID id){
+    public ResponseEntity<Map<String,String>> reviewToApproved(String id){
 
         Contract contract=contractRepository.findById(id).orElseThrow(() -> new ContractException("No Contract With This ID exist"));
         if(contract.getStatus() == ContractStatus.REVIEW){

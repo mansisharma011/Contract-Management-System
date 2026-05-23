@@ -13,7 +13,7 @@ import java.util.UUID;
 @Setter
 public class Contract {
     @Id
-    private UUID id = UUID.randomUUID();
+    private String id = UUID.randomUUID().toString();
     @NotBlank
     private String contractName;
     @NotBlank

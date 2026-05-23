@@ -1,5 +1,6 @@
 package com.contractmanagementsystem.controller;
 
+import com.contractmanagementsystem.dto.QuestionAnswerResponseDTO;
 import com.contractmanagementsystem.service.ClientService;
 import com.contractmanagementsystem.service.ConsultantService;
 
@@ -9,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.core.io.Resource;
 import java.net.MalformedURLException;
 import java.util.Map;
-import java.util.UUID;
 
 @RequiredArgsConstructor
 @RestController
@@ -35,6 +35,14 @@ public class ConsultantController {
     public ResponseEntity<Map<String,Object>> getContractByID(@PathVariable String id){
         return consultantService.getContract(id);
 
+    }
+
+    @PostMapping("/{id}/ask")
+    public ResponseEntity<QuestionAnswerResponseDTO> askQuestion(
+            @PathVariable String id,
+            @RequestBody String question
+    ) {
+        return ResponseEntity.ok(consultantService.askQuestion(id, question));
     }
 
     @PutMapping("/updateStatusToReview/{id}")

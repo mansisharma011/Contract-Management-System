@@ -54,7 +54,7 @@ public class SecurityConfig {
 
                 // ADMIN only
                 .requestMatchers(
-                        "/users/update-role"
+                        "/admin/**"
                 )
                 .hasRole("ADMIN")
 
@@ -62,8 +62,7 @@ public class SecurityConfig {
                 .requestMatchers(
                         "/consultant/**"
                 )
-                .hasAnyRole(
-                        "ADMIN",
+                .hasRole(
                         "CONSULTANT"
                 )
 

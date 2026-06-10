@@ -11,5 +11,5 @@ import java.util.List;
 public interface ContractRepository extends MongoRepository<Contract, String> {
     List<Contract> findByConsultantId(String consultantId);
     List<Contract> findByClientId(String clientId);
-    List<Contract> findByContractStatus(ContractStatus contractStatus);
+    List<Contract> findByStatus(ContractStatus status);
 }

@@ -109,17 +109,17 @@ public class AdminService {
 
 
     public ResponseEntity<Map<String, Object>> getContractsInDraft() {
-        List<Contract> contracts =contractRepository.findByContractStatus(ContractStatus.DRAFT);
+        List<Contract> contracts =contractRepository.findByStatus(ContractStatus.DRAFT);
         return utilForFetch(contracts);
     }
 
     public ResponseEntity<Map<String, Object>> getContractsInReview() {
-        List<Contract> contracts =contractRepository.findByContractStatus(ContractStatus.REVIEW);
+        List<Contract> contracts =contractRepository.findByStatus(ContractStatus.REVIEW);
         return utilForFetch(contracts);
     }
 
     public ResponseEntity<Map<String, Object>> getContractsApproved() {
-        List<Contract> contracts =contractRepository.findByContractStatus(ContractStatus.APPROVED);
+        List<Contract> contracts =contractRepository.findByStatus(ContractStatus.APPROVED);
         return utilForFetch(contracts);
     }
 

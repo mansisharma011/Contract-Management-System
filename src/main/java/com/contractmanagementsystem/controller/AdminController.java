@@ -1,6 +1,8 @@
 package com.contractmanagementsystem.controller;
 
 import com.contractmanagementsystem.service.AdminService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,25 +32,25 @@ public class AdminController {
     }
 
     @GetMapping("/getContracts/{id}")
-    public ResponseEntity<Map<String,Object>>getContractByClientId(@PathVariable String id){
+    public ResponseEntity<Map<String,Object>>getContractByClientId(@NotBlank @PathVariable String id){
         return adminService.getContractByClientId(id);
 
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Map<String,Object>>getContractByConsultantId(@PathVariable String id){
+    public ResponseEntity<Map<String,Object>>getContractByConsultantId(@NotBlank @PathVariable String id){
         return adminService.getContractByConsultantId(id);
 
     }
 
     @GetMapping("/contract/{id}")
-    public ResponseEntity<Map<String,Object>>getContract(@PathVariable String id){
+    public ResponseEntity<Map<String,Object>>getContract(@NotBlank @PathVariable String id){
         return adminService.getContract(id);
 
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Map<String,Object>>changeRoleToConsultant(@PathVariable String id){
+    public ResponseEntity<Map<String,Object>>changeRoleToConsultant(@NotBlank @PathVariable String id){
         return adminService.changeRoleToConsultant(id);
     }
 

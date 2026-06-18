@@ -4,6 +4,8 @@ import com.contractmanagementsystem.dto.ContractRequestDTO;
 import com.contractmanagementsystem.dto.QuestionAnswerResponseDTO;
 import com.contractmanagementsystem.security.AuthenticatedUser;
 import com.contractmanagementsystem.service.ClientService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +23,7 @@ public class ClientController {
     private final ClientService clientService;
 
     @PostMapping
-    public ResponseEntity<Map<String, Object>> uploadContract(@ModelAttribute ContractRequestDTO contractRequestDTO, Authentication authentication) throws Exception {
+    public ResponseEntity<Map<String, Object>> uploadContract(@Valid @ModelAttribute ContractRequestDTO contractRequestDTO, Authentication authentication) throws Exception {
         AuthenticatedUser user=(AuthenticatedUser) authentication.getPrincipal();
         String id= user.getUserId();
         String clientName= user.getUserName();
@@ -30,7 +32,7 @@ public class ClientController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Map<String, Object>> updateContract( @ModelAttribute ContractRequestDTO contractRequestDTO,@PathVariable String id, Authentication authentication) throws Exception {
+    public ResponseEntity<Map<String, Object>> updateContract(@Valid @ModelAttribute ContractRequestDTO contractRequestDTO, @NotBlank @PathVariable String id, Authentication authentication) throws Exception {
         AuthenticatedUser user=(AuthenticatedUser) authentication.getPrincipal();
         String userId = user.getUserId();
 
@@ -45,7 +47,7 @@ public class ClientController {
 
     @GetMapping("/{id}/file")
     public ResponseEntity<Resource> downloadContract(
-            @PathVariable String id, Authentication authentication
+            @NotBlank @PathVariable String id, Authentication authentication
     ) throws MalformedURLException {
 
         AuthenticatedUser user=(AuthenticatedUser) authentication.getPrincipal();
@@ -55,14 +57,14 @@ public class ClientController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Map<String,Object>> getContractByID(@PathVariable String id, Authentication authentication){
+    public ResponseEntity<Map<String,Object>> getContractByID(@NotBlank @PathVariable String id, Authentication authentication){
         String userId=((AuthenticatedUser)authentication.getPrincipal()).getUserId();
         return clientService.getContract(userId,id);
 
     }
 
     @PostMapping("/{id}/ask")
-    public ResponseEntity<QuestionAnswerResponseDTO> askQuestion(@PathVariable String id, @RequestBody String question, Authentication authentication
+    public ResponseEntity<QuestionAnswerResponseDTO> askQuestion(@NotBlank @PathVariable String id, @NotBlank @RequestBody String question, Authentication authentication
     ) {
         String userId=((AuthenticatedUser)authentication.getPrincipal()).getUserId();
         return ResponseEntity.ok(clientService.askQuestion(userId,id, question));

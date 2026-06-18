@@ -9,7 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Data
 @NoArgsConstructor
 public class ContractRequestDTO {
-    @NotBlank
+    @NotBlank(message = "Consultant Id is required")
     private String consultantId;
     @NotBlank(message = "Contract name is required")
     private String contractName;

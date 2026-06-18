@@ -4,6 +4,7 @@ import com.contractmanagementsystem.dto.QuestionAnswerResponseDTO;
 import com.contractmanagementsystem.security.AuthenticatedUser;
 import com.contractmanagementsystem.service.ConsultantService;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -28,7 +29,7 @@ public class ConsultantController {
 
     @GetMapping("/{id}/file")
     public ResponseEntity<Resource> downloadContract(
-            @PathVariable String id, Authentication authentication
+            @NotBlank @PathVariable String id, Authentication authentication
     ) throws MalformedURLException {
 
         AuthenticatedUser user=(AuthenticatedUser) authentication.getPrincipal();
@@ -38,27 +39,27 @@ public class ConsultantController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Map<String,Object>> getContractByID(@PathVariable String id, Authentication authentication){
+    public ResponseEntity<Map<String,Object>> getContractByID(@NotBlank @PathVariable String id, Authentication authentication){
         String userId=((AuthenticatedUser)authentication.getPrincipal()).getUserId();
         return consultantService.getContract(userId,id);
 
     }
 
     @PostMapping("/{id}/ask")
-    public ResponseEntity<QuestionAnswerResponseDTO> askQuestion(@PathVariable String id, @RequestBody String question, Authentication authentication
+    public ResponseEntity<QuestionAnswerResponseDTO> askQuestion(@NotBlank @PathVariable String id,@NotBlank @RequestBody String question, Authentication authentication
     ) {
         String userId=((AuthenticatedUser)authentication.getPrincipal()).getUserId();
         return ResponseEntity.ok(consultantService.askQuestion(userId,id, question));
     }
 
     @PutMapping("/updateStatusToReview/{id}")
-    public ResponseEntity<Map<String,String>> draftToReview(@PathVariable String id,Authentication authentication){
+    public ResponseEntity<Map<String,String>> draftToReview(@NotBlank @PathVariable String id,Authentication authentication){
         String userId=((AuthenticatedUser)authentication.getPrincipal()).getUserId();
         return consultantService.draftToReview(userId,id);
     }
 
     @PutMapping("/updateStatusToApproved/{id}")
-    public ResponseEntity<Map<String,String>> reviewToApproved(@PathVariable String id, Authentication authentication){
+    public ResponseEntity<Map<String,String>> reviewToApproved(@NotBlank @PathVariable String id, Authentication authentication){
         String userId=((AuthenticatedUser)authentication.getPrincipal()).getUserId();
         return consultantService.reviewToApproved(userId,id);
     }

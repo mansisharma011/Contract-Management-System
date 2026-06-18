@@ -4,6 +4,7 @@ import com.contractmanagementsystem.dto.AuthResponse;
 import com.contractmanagementsystem.dto.LoginRequest;
 import com.contractmanagementsystem.dto.RegisterRequest;
 import com.contractmanagementsystem.service.AuthService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,14 +21,14 @@ public class AuthController {
 
     private final AuthService authService;
     @PostMapping
-    public ResponseEntity<AuthResponse> loginUser(@RequestBody LoginRequest loginRequest){
+    public ResponseEntity<AuthResponse> loginUser(@Valid @RequestBody LoginRequest loginRequest){
         return authService.loginUser(loginRequest);
 
     }
 
     @PostMapping("/register")
     public ResponseEntity<Map<String,Object>> register(
-            @RequestBody RegisterRequest request
+            @Valid @RequestBody RegisterRequest request
     ) {
 
         return authService.register(request);

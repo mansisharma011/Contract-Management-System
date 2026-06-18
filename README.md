@@ -1,42 +1,201 @@
 # Contract Management System
 
-A Spring Boot backend project for managing legal contracts in a consultancy workflow. The system supports contract upload, document parsing, contract retrieval, status updates, file download, and basic contract Q&A using keyword matching.
+A Spring Boot backend application designed to manage legal contracts through a secure consultancy workflow.
 
-## Features
+The system implements role-based and ownership-based access control to ensure that users can only access contracts they are authorized to view. Clients can manage their own contracts, consultants can review and approve contracts assigned to them, and administrators can oversee workflow progress without accessing confidential contract content.
+
+In addition to contract management, the application supports document parsing using Apache Tika and provides contract question-answering through keyword-based retrieval from extracted contract text.
+
+---
+
+## Overview
+
+Legal contracts often contain sensitive information that should only be accessible to specific stakeholders. This project focuses on enforcing those access boundaries throughout the entire contract lifecycle.
+
+Key security rules include:
+
+  - Clients can only access, update, download, and query their own contracts.
+  - Consultants can only access contracts assigned to them.
+  - Administrators can monitor contract workflow and user activity without viewing contract contents.
+  - Every contract retrieval request validates both user role and contract ownership/assignment before data is returned.
+  - Unauthorized access attempts result in application-level exceptions and access denial.
+
+Beyond access control, the system supports:
+
+- Secure JWT-based authentication
+- Contract upload and storage
+- Document text extraction using Apache Tika
+- Contract lifecycle management (Draft → Review → Approved)
+- Contract question-answering using keyword-based retrieval
+- File download and document management
+- MongoDB-based persistence
+
+---
+
+## Key Features
+
+### Authentication & Security
+
+- JWT-based Authentication
+- Spring Security Integration
+- Stateless Session Management
+- Role-Based Access Control (RBAC)
+- Ownership-based contract access validation
+- Users can only access resources permitted by their role and ownership rules
+
+Supported Roles:
+
+- ADMIN
+- CONSULTANT
+- CLIENT
+
+---
+
+### Contract Management
 
 - Upload PDF/DOCX contracts
-- Update existing contracts
-- Store contract metadata in MongoDB
-- Store uploaded contract files locally
-- Extract contract text using Apache Tika
-- Fetch all contracts
-- Fetch contract details by ID
-- Download uploaded contract file
-- Update contract status
-- Ask basic questions from contract content using keyword matching
-- Global exception handling
-- Request validation support
+- Update contract details
+- Retrieve contracts
+- Download uploaded contract files
+- Track and Update contract status
+- Store metadata in MongoDB
+- Store uploaded files locally
 
-## Contract Workflow
+---
+
+### Document Processing
+
+- Text extraction using Apache Tika
+- Extracted content stored for retrieval
+- Contract Question & Answer functionality
+- Keyword-based answer retrieval from extracted contract text
+
+---
+
+### Workflow Management
+
+Contracts move through the following lifecycle:
 
 ```text
-DRAFT → REVIEW → APPROVED
+DRAFT
+   ↓
+REVIEW
+   ↓
+APPROVED
 ```
 
-## Tech Stack
+This workflow ensures contracts are reviewed and approved before completion.
+
+---
+
+## Security Architecture
+
+```text
+   Client Request
+         │
+         ▼
+Spring Security Filter Chain
+         │
+         ▼
+JWT Authentication Filter
+         │
+         ▼
+    Security Context
+         │
+         ▼
+Role & Ownership Validation
+         │
+         ▼
+   Controller Layer
+         │
+         ▼
+    Service Layer
+         │
+         ▼
+MongoDB / File Storage
+```
+
+---
+
+## Role Permissions
+
+### Admin
+
+- View contracts status across the system
+- View consultants
+- View clients
+- Assign consultant roles
+- Monitor contract workflow
+
+### Consultant
+
+- View assigned contracts
+- Review assigned contracts
+- Approve assigned contracts
+- Download assigned contract files
+- Ask questions from assigned contract content
+
+### Client
+
+- Upload contracts
+- Update own contracts
+- View own contracts
+- Download own contracts
+- Ask questions from own uploaded contracts
+
+---
+
+## Document Processing Flow for Q&A
+
+```text
+Upload Contract
+       │
+       ▼
+Store File Locally
+       │
+       ▼
+Apache Tika Extraction
+       │
+       ▼
+Store Extracted Text
+       │
+       ▼
+Contract Q&A Retrieval
+```
+
+---
+
+## Technology Stack
+
+### Backend
 
 - Java 21
-- Spring Boot
+- Spring Boot 3
 - Spring Web
-- Spring Data MongoDB
-- MongoDB
-- Maven
-- Apache Tika
-- Lombok
+- Spring Security
 - Spring Validation
 
+### Database
+
+- MongoDB
+- Spring Data MongoDB
+
+### Document Processing
+
+- Apache Tika
+
+### Build Tools
+
+- Maven
+- Lombok
+
+### Authentication
+
+- JWT (JSON Web Token)
+
+---
+
 ## Project Structure
-Built using layered architecture with separation of concerns.
 
 ```text
 src/main/java/com/contractmanagementsystem
@@ -45,74 +204,60 @@ src/main/java/com/contractmanagementsystem
 ├── exception
 ├── model
 ├── repository
+├── security
 ├── service
 ├── utils
 └── ContractManagementSystemApplication.java
 ```
 
-## API Endpoints
+---
 
-### Client APIs
+## Sample API Groups
+
+### Authentication
+
+```http
+POST /auth/register
+POST /auth
+```
+
+### Client Operations
 
 ```http
 POST /client
-```
-
-Upload a new contract.
-
-```http
 PUT /client/{id}
+GET /client
+GET /client/{id}
+POST /client/{id}/ask
 ```
 
-Update an existing contract.
-
-### Consultant APIs
+### Consultant Operations
 
 ```http
-GET /Consultant
+GET /consultant
+GET /consultant/{id}
+PUT /consultant/updateStatusToReview/{id}
+PUT /consultant/updateStatusToApproved/{id}
 ```
 
-Fetch all contracts.
+### Admin Operations
 
 ```http
-GET /Consultant/{id}
+GET /admin/getAllContracts
+PUT /admin/{id}
 ```
 
-Fetch contract details by ID.
+---
 
-```http
-GET /Consultant/{id}/file
-```
+## Question & Answer Example
 
-Download uploaded contract file.
-
-```http
-POST /Consultant/{id}/ask
-```
-
-Ask a question from the extracted contract text.
-
-```http
-PUT /Consultant/updateStatusToReview/{id}
-```
-
-Update contract status from `DRAFT` to `REVIEW`.
-
-```http
-PUT /Consultant/updateStatusToApproved/{id}
-```
-
-Update contract status from `REVIEW` to `APPROVED`.
-
-## Q&A Request Example
-
-Request body type: `text/plain`
+### Request
 
 ```text
 What are the payment terms?
 ```
 
-Example response:
+### Response
 
 ```json
 {
@@ -124,64 +269,67 @@ Example response:
 }
 ```
 
-## Setup
+---
 
-### 1. Clone the repository
+## Setup & Installation
+
+### Clone Repository
 
 ```bash
 git clone https://github.com/mansisharma011/Contract-Management-System.git
 cd Contract-Management-System
 ```
 
-### 2. Start MongoDB locally
-
-Make sure MongoDB is running on your system.
-
-### 3. Configure database
-
-Update `src/main/resources/application.properties` if required:
+### Configure MongoDB
 
 ```properties
 spring.data.mongodb.uri=mongodb://localhost:27017/contract_db
 ```
 
-### 4. Run the application
+### Configure JWT Secret
 
-For Linux/macOS:
-
-```bash
-./mvnw spring-boot:run
+```properties
+jwt.secret=YOUR_BASE64_SECRET_KEY
 ```
 
-For Windows:
+### Run Application
+
+Windows:
 
 ```bash
 mvnw.cmd spring-boot:run
 ```
 
-The application will run at:
+Linux/macOS:
+
+```bash
+./mvnw spring-boot:run
+```
+
+Application runs on:
 
 ```text
 http://localhost:8080
 ```
 
-## Document Processing
-
-Uploaded contract files are stored locally, and their text content is extracted using Apache Tika. The extracted text is used for contract search and keyword-based Q&A retrieval.
-
-## Error Handling
-
-The project includes a global exception handler for validation errors, contract-related exceptions, and text extraction errors.
+---
 
 ## Future Improvements
 
-- Add authentication and authorization
-- Add AI based Q&A handling
-- Add Swagger/OpenAPI documentation
-- Add unit and integration tests
-- Add pagination and filtering
-- Add cloud-based file storage
+- LLM-powered Contract Q&A using Retrieval-Augmented Generation (RAG)
+- Semantic Search using Vector Embeddings
+- OpenAPI / Swagger Documentation
+- Unit & Integration Testing
+- Pagination & Filtering
+- Cloud File Storage (AWS S3)
+- Contract Versioning
+- Audit Logging
+
+
+---
 
 ## Author
 
-Developed by [Mansi Sharma](https://github.com/mansisharma011)
+**Mansi Sharma**
+
+Java Backend Developer | Spring Boot | MongoDB | Spring Security | REST APIs
